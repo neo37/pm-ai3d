@@ -51,6 +51,10 @@
   function makeMarker(map, p, onClick) {
     var el = document.createElement("div");
     el.className = "mk";
+    el.style.color = p.color || "#c8963e";
+    var pulse = document.createElement("div");
+    pulse.className = "mk-pulse";
+    el.appendChild(pulse);
     var pin = document.createElement("div");
     pin.className = "mk-pin";
     pin.style.background = p.color || "#c8963e";
@@ -111,7 +115,7 @@
       tour.playing = false;
       if (tour.timer) { clearTimeout(tour.timer); tour.timer = null; }
       var b = document.getElementById(opts.playBtn);
-      if (b) b.textContent = "▶ Запустить облёт";
+      if (b) b.textContent = "Запустить облёт";
     }
 
     function flyToProject(p, i) {
@@ -145,12 +149,16 @@
       if (!projects.length) return;
       tour.playing = true;
       var b = document.getElementById(opts.playBtn);
-      if (b) b.textContent = "⏸ Остановить облёт";
+      if (b) b.textContent = "Остановить облёт";
       step(projects);
     }
 
     map.on("load", function () {
       add3DBuildings(map);
+      var host = document.getElementById(container);
+      if (host && host.classList.contains("hero-map")) host.classList.add("ready");
+      var loader = document.getElementById(opts.loader);
+      if (loader) loader.classList.add("hide");
 
       fetch("/api/projects.json")
         .then(function (r) { return r.json(); })

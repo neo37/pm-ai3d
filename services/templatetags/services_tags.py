@@ -15,6 +15,11 @@ _ICONS = {
 }
 
 
+@register.filter
+def split_marquee(value, sep=","):
+    return [v.strip() for v in value.split(sep) if v.strip()]
+
+
 @register.simple_tag
 def service_icon(key):
     inner = _ICONS.get(key, _ICONS["blueprint"])

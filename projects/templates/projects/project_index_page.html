@@ -20,9 +20,10 @@
   <div class="container">
     <div class="map-wrap">
       <div id="portfolioMap"></div>
+      <div class="map-loading" id="mapLoading"><div class="spinner"></div>Загружаем 3D-карту…</div>
       <div class="map-legend" id="mapLegend"></div>
       <div class="map-controls">
-        <button id="tourPlay">▶ Запустить облёт</button>
+        <button id="tourPlay">Запустить облёт</button>
         <button id="tourReset">Показать все</button>
       </div>
     </div>
@@ -49,8 +50,8 @@
           <h3>{{ p.title }}</h3>
           {% if p.summary %}<p style="color:var(--text-soft);font-size:.9rem;margin:0 0 4px">{{ p.summary|truncatechars:90 }}</p>{% endif %}
           <div class="proj-meta">
-            {% if p.address %}<span class="ic">📍 {{ p.address }}</span>{% endif %}
-            {% if p.year %}<span class="ic">🗓 {{ p.year }}</span>{% endif %}
+            {% if p.address %}<span class="ic"><svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 1 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>{{ p.address }}</span>{% endif %}
+            {% if p.year %}<span class="ic">{{ p.year }}</span>{% endif %}
           </div>
         </div>
       </a>
@@ -84,6 +85,7 @@
       autoTour: false,
       playBtn: "tourPlay",
       resetBtn: "tourReset",
+      loader: "mapLoading",
       padding: 90
     });
   })();
