@@ -133,8 +133,9 @@ p{margin:0 0 1em}
 .hero{position:relative;background:var(--ink);color:#fff;overflow:hidden;min-height:100vh;min-height:100dvh;display:flex;align-items:center}
 .hero-map{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity 1.6s ease}
 .hero-map.ready{opacity:1}
-/* необычная тёмная «архитектурная» тема карты — фильтр только на canvas, маркеры остаются цветными */
-.hero-map .maplibregl-canvas{filter:grayscale(.35) contrast(1.06) brightness(.72) saturate(.85)}
+/* «архитектурная» тема карты — фильтр только на canvas; маркеры остаются цветными.
+   Осветлён, чтобы 3D-здания читались объёмом. */
+.hero-map .maplibregl-canvas{filter:grayscale(.2) contrast(1.08) brightness(.9) saturate(.9)}
 .hero::after{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:

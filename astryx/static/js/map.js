@@ -12,40 +12,45 @@
     });
   }
 
+  var BUILDING_COLOR = [
+    "interpolate", ["linear"], ["get", "render_height"],
+    0, "#cfd4dc", 30, "#bcc3ce", 90, "#a3acbb", 200, "#8892a4", 400, "#6f7a8f"
+  ];
+
   function add3DBuildings(map) {
     try {
+      // В стиле liberty уже есть слой building-3d — усиливаем его,
+      // чтобы объём читался ярче и появлялся раньше.
+      if (map.getLayer("building-3d")) {
+        map.setLayerZoomRange("building-3d", 13, 24);
+        map.setPaintProperty("building-3d", "fill-extrusion-opacity", 0.94);
+        map.setPaintProperty("building-3d", "fill-extrusion-color", BUILDING_COLOR);
+        map.setPaintProperty("building-3d", "fill-extrusion-height", [
+          "interpolate", ["linear"], ["zoom"],
+          13, 0, 14, ["coalesce", ["get", "render_height"], 10]
+        ]);
+        return;
+      }
+      // Фолбэк, если в стиле нет готового 3D-слоя.
       var layers = map.getStyle().layers || [];
       var labelLayer = null;
       for (var i = 0; i < layers.length; i++) {
         if (layers[i].type === "symbol" && layers[i].layout && layers[i].layout["text-field"]) {
-          labelLayer = layers[i].id;
-          break;
+          labelLayer = layers[i].id; break;
         }
       }
       if (map.getLayer("astryx-3d-buildings")) return;
-      map.addLayer(
-        {
-          id: "astryx-3d-buildings",
-          source: "openmaptiles",
-          "source-layer": "building",
-          type: "fill-extrusion",
-          minzoom: 13,
-          paint: {
-            "fill-extrusion-color": [
-              "interpolate", ["linear"], ["get", "render_height"],
-              0, "#d7dbe2", 60, "#c3c9d4", 160, "#aab2c0"
-            ],
-            "fill-extrusion-height": [
-              "interpolate", ["linear"], ["zoom"],
-              13, 0, 15.5, ["coalesce", ["get", "render_height"], 8]
-            ],
-            "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-            "fill-extrusion-opacity": 0.85
-          }
-        },
-        labelLayer
-      );
-    } catch (e) { /* style may lack the source; ignore */ }
+      map.addLayer({
+        id: "astryx-3d-buildings", source: "openmaptiles", "source-layer": "building",
+        type: "fill-extrusion", minzoom: 13,
+        paint: {
+          "fill-extrusion-color": BUILDING_COLOR,
+          "fill-extrusion-height": ["interpolate", ["linear"], ["zoom"], 13, 0, 14, ["coalesce", ["get", "render_height"], 10]],
+          "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
+          "fill-extrusion-opacity": 0.92
+        }
+      }, labelLayer);
+    } catch (e) { /* ignore */ }
   }
 
   function makeMarker(map, p, onClick) {
@@ -96,8 +101,9 @@
       style: STYLE,
       center: opts.center || MOSCOW,
       zoom: opts.zoom || 10.4,
-      pitch: 50,
-      bearing: -14,
+      pitch: opts.pitch != null ? opts.pitch : 58,
+      bearing: -17,
+      maxPitch: 75,
       interactive: interactive,
       attributionControl: true,
       cooperativeGestures: !!opts.cooperative
@@ -110,7 +116,7 @@
 
     var markers = [];
     var tour = { t1: null, t2: null, idx: 0, playing: false, list: [] };
-    var FLIGHT = 3200, PAUSE = 1300;
+    var FLIGHT = 3400, PAUSE = 2600;
 
     function clearTimers() {
       if (tour.t1) { clearTimeout(tour.t1); tour.t1 = null; }
@@ -138,8 +144,8 @@
       var p = tour.list[i], mk = markers[i];
       map.flyTo({
         center: [p.lng, p.lat],
-        zoom: 15.1, pitch: 58, bearing: -20 + (tour.idx % 8) * 7,
-        duration: FLIGHT, essential: true
+        zoom: 16, pitch: 64, bearing: -24 + (tour.idx % 8) * 9,
+        duration: FLIGHT, essential: true, curve: 1.5
       });
       tour.t1 = setTimeout(function () {
         if (!tour.playing) return;
@@ -183,7 +189,7 @@
             markers.push(
               makeMarker(map, p, function (proj, mk) {
                 stopTour();
-                map.flyTo({ center: [proj.lng, proj.lat], zoom: 15.5, pitch: 58, duration: 1400 });
+                map.flyTo({ center: [proj.lng, proj.lat], zoom: 16, pitch: 64, duration: 1400, essential: true });
               })
             );
             bounds.extend([p.lng, p.lat]);
@@ -230,11 +236,12 @@
       container: container,
       style: STYLE,
       center: [lng, lat],
-      zoom: 15,
-      pitch: 50,
-      bearing: -14
+      zoom: 16,
+      pitch: 62,
+      bearing: -18,
+      maxPitch: 75
     });
-    map.addControl(new maplibregl.NavigationControl(), "top-right");
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "top-right");
     map.on("load", function () {
       add3DBuildings(map);
       var el = document.createElement("div");
