@@ -109,48 +109,58 @@
     map.scrollZoom.disable && !interactive && map.scrollZoom.disable();
 
     var markers = [];
-    var tour = { timer: null, idx: 0, playing: false };
+    var tour = { t1: null, t2: null, idx: 0, playing: false, list: [] };
+    var FLIGHT = 3200, PAUSE = 1300;
+
+    function clearTimers() {
+      if (tour.t1) { clearTimeout(tour.t1); tour.t1 = null; }
+      if (tour.t2) { clearTimeout(tour.t2); tour.t2 = null; }
+    }
+
+    function closePopups() {
+      markers.forEach(function (m) {
+        var p = m.getPopup && m.getPopup();
+        if (p && p.isOpen()) m.togglePopup();
+      });
+    }
 
     function stopTour() {
       tour.playing = false;
-      if (tour.timer) { clearTimeout(tour.timer); tour.timer = null; }
+      clearTimers();
       var b = document.getElementById(opts.playBtn);
       if (b) b.textContent = "Запустить облёт";
     }
 
-    function flyToProject(p, i) {
+    // Полностью на таймерах — не зависит от событий moveend (надёжно на моб.)
+    function tourStep() {
+      if (!tour.playing || !tour.list.length) return;
+      var i = tour.idx % tour.list.length;
+      var p = tour.list[i], mk = markers[i];
       map.flyTo({
         center: [p.lng, p.lat],
-        zoom: 15.2,
-        pitch: 58,
-        bearing: -20 + (i % 8) * 6,
-        duration: 3200,
-        essential: true
+        zoom: 15.1, pitch: 58, bearing: -20 + (tour.idx % 8) * 7,
+        duration: FLIGHT, essential: true
       });
-    }
-
-    function step(projects) {
-      if (!tour.playing) return;
-      var p = projects[tour.idx % projects.length];
-      var mk = markers[tour.idx % projects.length];
-      flyToProject(p, tour.idx);
-      map.once("moveend", function () {
+      tour.t1 = setTimeout(function () {
         if (!tour.playing) return;
-        if (mk && mk.getPopup && !mk.getPopup().isOpen()) mk.togglePopup();
-        tour.timer = setTimeout(function () {
-          if (mk && mk.getPopup && mk.getPopup().isOpen()) mk.togglePopup();
-          tour.idx++;
-          step(projects);
-        }, 2600);
-      });
+        closePopups();
+        if (mk && mk.getPopup) mk.togglePopup();
+      }, FLIGHT - 700);
+      tour.t2 = setTimeout(function () {
+        if (!tour.playing) return;
+        tour.idx++;
+        tourStep();
+      }, FLIGHT + PAUSE);
     }
 
     function playTour(projects) {
       if (!projects.length) return;
+      tour.list = projects;
       tour.playing = true;
+      clearTimers();
       var b = document.getElementById(opts.playBtn);
       if (b) b.textContent = "Остановить облёт";
-      step(projects);
+      tourStep();
     }
 
     map.on("load", function () {
@@ -199,11 +209,12 @@
             });
           }
 
-          // any user drag stops the tour
-          map.on("dragstart", stopTour);
+          // остановка облёта только на интерактивной карте (портфолио),
+          // чтобы касание/скролл по фону-герою не глушили полёт на мобиле
+          if (interactive) map.on("dragstart", stopTour);
 
           if (autoTour) {
-            setTimeout(function () { playTour(projects); }, 500);
+            setTimeout(function () { playTour(projects); }, 600);
           }
         })
         .catch(function () {});
