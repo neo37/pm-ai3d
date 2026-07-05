@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+{% block extra_css %}
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Главная</a> / {{ page.title }}</div>
+    <h1>{{ page.title }}</h1>
+    {% if page.intro %}<p class="lead">{{ page.intro }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container contact-grid">
+    <div>
+      <div class="contact-card">
+        <h4>Адрес офиса</h4>
+        {% if page.address %}<p>{{ page.address }}</p>{% endif %}
+        {% if page.legal_address %}<p style="font-size:.85rem;color:var(--muted)">Юр. адрес: {{ page.legal_address }}</p>{% endif %}
+      </div>
+      <div class="contact-card">
+        <h4>Телефоны и почта</h4>
+        {% if page.phones %}<p>{{ page.phones }}</p>{% endif %}
+        {% if page.email %}<p><a href="mailto:{{ page.email }}" style="color:var(--accent)">{{ page.email }}</a></p>{% endif %}
+      </div>
+      {% if page.body %}<div class="rich detail-body">{{ page.body|richtext }}</div>{% endif %}
+    </div>
+    <div>
+      <div class="mini-map" id="contactMap" style="height:420px"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+  window.initPointMap(document.getElementById("contactMap"), {{ page.longitude }}, {{ page.latitude }}, "Институт Проектного Мышления");
+</script>
+{% endblock %}

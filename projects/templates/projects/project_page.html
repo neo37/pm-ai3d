@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Главная</a> / <a href="{{ page.get_parent.url }}">Объекты</a> / {{ page.title }}</div>
+    <span class="eyebrow" style="color:{{ page.category_color }}">{{ page.category_label }}</span>
+    <h1>{{ page.title }}</h1>
+    {% if page.summary %}<p class="lead">{{ page.summary }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container detail-grid">
+    <div>
+      {% if page.lead_image %}{% image page.lead_image width-1200 as im %}<img src="{{ im.url }}" alt="{{ page.title }}" style="border-radius:var(--radius);margin-bottom:28px">{% endif %}
+      <div class="detail-body rich">{{ page.body|richtext }}</div>
+
+      {% if page.gallery_images.all %}
+      <div class="gallery">
+        {% for g in page.gallery_images.all %}
+          {% image g.image fill-500x375 as gi %}
+          <img src="{{ gi.url }}" alt="{{ g.caption }}" loading="lazy">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <aside>
+      <div class="spec">
+        <dl>
+          <div><dt>Категория</dt><dd>{{ page.category_label }}</dd></div>
+          {% if page.address %}<div><dt>Расположение</dt><dd>{{ page.address }}</dd></div>{% endif %}
+          {% if page.year %}<div><dt>Год</dt><dd>{{ page.year }}</dd></div>{% endif %}
+          {% if page.stage %}<div><dt>Стадия</dt><dd>{{ page.stage }}</dd></div>{% endif %}
+          {% if page.customer %}<div><dt>Заказчик</dt><dd>{{ page.customer }}</dd></div>{% endif %}
+        </dl>
+        {% if page.latitude and page.longitude %}
+        <div class="mini-map" id="detailMap"></div>
+        {% if page.approximate_location %}<p style="font-size:.78rem;color:var(--muted);margin:.6em 0 0">Расположение на карте указано приблизительно.</p>{% endif %}
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if page.latitude and page.longitude %}
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+  window.initPointMap(document.getElementById("detailMap"), {{ page.longitude }}, {{ page.latitude }}, "{{ page.title|escapejs }}");
+</script>
+{% endif %}
+{% endblock %}

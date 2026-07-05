@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags services_tags %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Главная</a> / {{ page.title }}</div>
+    <span class="eyebrow">Компетенции</span>
+    <h1>{{ page.title }}</h1>
+    {% if page.intro %}<div class="lead rich">{{ page.intro|richtext }}</div>{% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cards">
+      {% for s in services %}
+      <a class="card" href="{% pageurl s %}">
+        <div class="ico">{% service_icon s.icon %}</div>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.summary }}</p>
+        <span class="more">Подробнее →</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags services_tags navigation_tags %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block extra_css %}
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-map" id="heroMap"></div>
+  <div class="container hero-inner">
+    <span class="eyebrow">Институт Проектного Мышления</span>
+    <h1>{{ page.hero_title }}</h1>
+    <p class="lead">{{ page.hero_subtitle }}</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ portfolio_url }}">Смотреть объекты на карте</a>
+      <a class="btn btn-ghost" href="{% contacts_url %}">Обсудить проект</a>
+    </div>
+    <div class="hero-badges">
+      {% for s in page.stats.all %}
+        <div class="hero-badge"><b>{{ s.value }}</b><span>{{ s.label }}</span></div>
+      {% empty %}
+        <div class="hero-badge"><b>109+</b><span>реализованных объектов</span></div>
+        <div class="hero-badge"><b>43</b><span>дипломированных специалиста</span></div>
+        <div class="hero-badge"><b>2004</b><span>год основания</span></div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="map-hint">3D-карта объектов · камера облетает проекты</div>
+</section>
+
+{% if page.intro_body %}
+<section class="section">
+  <div class="container split">
+    <div class="reveal">
+      <span class="eyebrow">{{ page.intro_heading }}</span>
+      <div class="rich">{{ page.intro_body|richtext }}</div>
+    </div>
+    <div class="stats-grid reveal">
+      <div class="stat"><b>109+</b><span>объектов различного назначения</span></div>
+      <div class="stat"><b>Генпроект</b><span>функции генерального проектировщика</span></div>
+      <div class="stat"><b>ПД · РД</b><span>полный цикл проектной документации</span></div>
+      <div class="stat"><b>ISO 9001</b><span>подтверждённое качество работ</span></div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if services %}
+<section class="section section-tight" style="background:var(--paper-2)">
+  <div class="container">
+    <div class="center" style="margin-bottom:44px">
+      <span class="eyebrow">Компетенции</span>
+      <h2>Полный цикл проектирования</h2>
+      <p class="lead">От архитектурной концепции до авторского надзора — собственными силами.</p>
+    </div>
+    <div class="cards">
+      {% for s in services|slice:":8" %}
+      <a class="card reveal" href="{% pageurl s %}">
+        <div class="ico">{% service_icon s.icon %}</div>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.summary }}</p>
+        <span class="more">Подробнее →</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if projects %}
+<section class="section">
+  <div class="container">
+    <div class="center" style="margin-bottom:44px">
+      <span class="eyebrow">Портфолио</span>
+      <h2>Избранные объекты</h2>
+      <p class="lead">Жилые комплексы, общественные здания и градостроительные проекты в Москве и регионах.</p>
+    </div>
+    <div class="proj-grid">
+      {% for p in projects|slice:":6" %}
+      <a class="proj reveal" href="{% pageurl p %}">
+        <div class="proj-thumb">
+          {% if p.lead_image %}{% image p.lead_image fill-600x420 as im %}<img src="{{ im.url }}" alt="{{ p.title }}">{% else %}<div class="noimg">ИПМ</div>{% endif %}
+          <span class="proj-tag" style="background:{{ p.category_color }}">{{ p.category_label }}</span>
+        </div>
+        <div class="proj-body">
+          <h3>{{ p.title }}</h3>
+          <div class="proj-meta">
+            {% if p.address %}<span class="ic">📍 {{ p.address }}</span>{% endif %}
+            {% if p.year %}<span class="ic">🗓 {{ p.year }}</span>{% endif %}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="center" style="margin-top:40px">
+      <a class="btn btn-outline" href="{{ portfolio_url }}">Все объекты →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2>Готовы обсудить ваш проект?</h2>
+      <p class="lead">Выполним генеральное проектирование или отдельные разделы ПД и РД на условиях субподряда.</p>
+      <a class="btn btn-primary" href="{% contacts_url %}">Связаться с нами</a>
+    </div>
+  </div>
+</section>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+  window.initAstryxMap({
+    container: "heroMap",
+    interactive: false,
+    autoTour: true,
+    cooperative: true
+  });
+</script>
+{% endblock %}

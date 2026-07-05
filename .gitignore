@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Django / Wagtail
+*.sqlite3
+/media/
+/static/
+*.log
+.env
+astryx/settings/local.py
+.DS_Store

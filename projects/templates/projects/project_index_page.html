@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_css %}
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Главная</a> / Объекты</div>
+    <span class="eyebrow">Портфолио</span>
+    <h1>{{ page.title }}</h1>
+    {% if page.intro %}<div class="lead rich">{{ page.intro|richtext }}</div>
+    {% else %}<p class="lead">Реализованные объекты компании на 3D-карте. Нажмите «Запустить облёт», чтобы камера пролетела по проектам, или выберите объект вручную.</p>{% endif %}
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="map-wrap">
+      <div id="portfolioMap"></div>
+      <div class="map-legend" id="mapLegend"></div>
+      <div class="map-controls">
+        <button id="tourPlay">▶ Запустить облёт</button>
+        <button id="tourReset">Показать все</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="filters" data-filters>
+      <button class="active" data-filter="all">Все</button>
+      {% for value, label in categories %}
+        <button data-filter="{{ value }}">{{ label }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="proj-grid">
+      {% for p in projects %}
+      <a class="proj" href="{% pageurl p %}" data-cat="{{ p.category }}">
+        <div class="proj-thumb">
+          {% if p.lead_image %}{% image p.lead_image fill-600x420 as im %}<img src="{{ im.url }}" alt="{{ p.title }}" loading="lazy">{% else %}<div class="noimg">ИПМ</div>{% endif %}
+          <span class="proj-tag" style="background:{{ p.category_color }}">{{ p.category_label }}</span>
+        </div>
+        <div class="proj-body">
+          <h3>{{ p.title }}</h3>
+          {% if p.summary %}<p style="color:var(--text-soft);font-size:.9rem;margin:0 0 4px">{{ p.summary|truncatechars:90 }}</p>{% endif %}
+          <div class="proj-meta">
+            {% if p.address %}<span class="ic">📍 {{ p.address }}</span>{% endif %}
+            {% if p.year %}<span class="ic">🗓 {{ p.year }}</span>{% endif %}
+          </div>
+        </div>
+      </a>
+      {% empty %}
+      <p>Объекты появятся здесь после наполнения каталога.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="{% static 'js/map.js' %}"></script>
+<script>
+  (function(){
+    var legend = document.getElementById("mapLegend");
+    var cats = [
+      ["Жилые комплексы", "#e0a458"],
+      ["Общественные здания", "#5b8def"],
+      ["Коттеджи и интерьеры", "#57b894"],
+      ["Проекты планировки", "#a68bd6"],
+      ["Дизайн-проекты", "#e0685a"]
+    ];
+    legend.innerHTML = "<b style='font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#8a94a3'>Категории</b>" +
+      cats.map(function(c){return "<span><i class='dot' style='background:"+c[1]+"'></i>"+c[0]+"</span>";}).join("");
+
+    window.initAstryxMap({
+      container: "portfolioMap",
+      interactive: true,
+      autoTour: false,
+      playBtn: "tourPlay",
+      resetBtn: "tourReset",
+      padding: 90
+    });
+  })();
+</script>
+{% endblock %}

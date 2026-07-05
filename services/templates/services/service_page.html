@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags services_tags navigation_tags %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="/">Главная</a> / <a href="{{ page.get_parent.url }}">Компетенции</a> / {{ page.title }}</div>
+    <div style="display:flex;align-items:center;gap:18px">
+      <div class="ico" style="width:60px;height:60px">{% service_icon page.icon %}</div>
+      <div>
+        <span class="eyebrow" style="margin-bottom:4px">Услуга</span>
+        <h1 style="margin:0">{{ page.title }}</h1>
+      </div>
+    </div>
+    {% if page.summary %}<p class="lead" style="margin-top:20px">{{ page.summary }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:820px">
+    <div class="rich detail-body">{{ page.body|richtext }}</div>
+    <div class="cta-band reveal in" style="margin-top:48px">
+      <h2>Нужна эта услуга?</h2>
+      <p class="lead">Расскажите о задаче — предложим оптимальное проектное решение.</p>
+      <a class="btn btn-primary" href="{% contacts_url %}">Обсудить проект</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

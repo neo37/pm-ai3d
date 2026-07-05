@@ -1,0 +1,85 @@
+{% load static wagtailcore_tags wagtailuserbar navigation_tags %}
+
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            {% block title %}
+            {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+            {% endblock %}
+            {% block title_suffix %}
+            {% wagtail_site as current_site %}
+            {% if current_site and current_site.site_name %}— {{ current_site.site_name }}{% endif %}
+            {% endblock %}
+        </title>
+        {% if page.search_description %}
+        <meta name="description" content="{{ page.search_description }}" />
+        {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {% if request.in_preview_panel %}<base target="_blank">{% endif %}
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/astryx.css' %}">
+        {% block extra_css %}{% endblock %}
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+        {% wagtailuserbar %}
+
+        <header class="site-header" id="siteHeader">
+          <div class="container header-inner">
+            <a href="/" class="brand" aria-label="Институт Проектного Мышления">
+              <span class="brand-mark">ИПМ</span>
+              <span class="brand-text">
+                <b>Институт Проектного Мышления</b>
+                <small>Комплексное проектирование</small>
+              </span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Меню" aria-expanded="false">
+              <span></span><span></span><span></span>
+            </button>
+
+            <nav class="site-nav" id="siteNav">
+              {% main_menu %}
+              <a class="nav-cta" href="{% contacts_url %}">Связаться</a>
+            </nav>
+          </div>
+        </header>
+
+        <main id="content">
+          {% block content %}{% endblock %}
+        </main>
+
+        <footer class="site-footer">
+          <div class="container footer-grid">
+            <div class="footer-col footer-brand">
+              <div class="brand-mark big">ИПМ</div>
+              <p>Институт Проектного Мышления — комплексное проектирование гражданских объектов капитального строительства. Вы принимаете решения — мы создаём возможности.</p>
+            </div>
+            <div class="footer-col">
+              <h4>Разделы</h4>
+              {% footer_menu %}
+            </div>
+            <div class="footer-col">
+              <h4>Контакты</h4>
+              <p>г. Москва, Ленинградский пр-кт, д.&nbsp;26, корп.&nbsp;1</p>
+              <p><a href="tel:+74956124265">+7 (495) 612-42-65</a></p>
+              <p><a href="mailto:proektm@yandex.ru">proektm@yandex.ru</a></p>
+            </div>
+          </div>
+          <div class="container footer-bottom">
+            <span>© {% now "Y" %} Институт Проектного Мышления. Все права защищены.</span>
+            <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a>
+          </div>
+        </footer>
+
+        <script type="text/javascript" src="{% static 'js/astryx.js' %}"></script>
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,6 @@
+{% load wagtailcore_tags %}
+<ul class="footer-nav">
+  {% for item in menu_items %}
+    <li><a href="{% pageurl item %}">{{ item.title }}</a></li>
+  {% endfor %}
+</ul>

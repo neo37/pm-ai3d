@@ -1,0 +1,11 @@
+{% load wagtailcore_tags %}
+<ul class="nav-list">
+  {% for item in menu_items %}
+    <li>
+      <a href="{% pageurl item %}"
+         class="{% if calling_page and calling_page.pk == item.pk %}is-active{% endif %}">
+        {{ item.title }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
