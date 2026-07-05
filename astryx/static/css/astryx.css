@@ -124,15 +124,18 @@ p{margin:0 0 1em}
 .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
 .nav-toggle span{width:24px;height:2px;background:var(--ink);border-radius:2px;transition:.25s}
 
-/* ---------- Hero ---------- */
-.hero{position:relative;background:var(--ink);color:#fff;overflow:hidden;min-height:min(92vh,860px);display:flex;align-items:center}
-.hero-map{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity 1.4s ease}
-.hero-map.ready{opacity:.95}
+/* ---------- Hero (full-screen 3D map) ---------- */
+.hero{position:relative;background:var(--ink);color:#fff;overflow:hidden;min-height:100vh;min-height:100dvh;display:flex;align-items:center}
+.hero-map{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity 1.6s ease}
+.hero-map.ready{opacity:1}
+/* необычная тёмная «архитектурная» тема карты — фильтр только на canvas, маркеры остаются цветными */
+.hero-map .maplibregl-canvas{filter:grayscale(.35) contrast(1.06) brightness(.72) saturate(.85)}
 .hero::after{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
-    radial-gradient(120% 90% at 8% 30%,rgba(10,20,32,.96) 0%,rgba(10,20,32,.72) 40%,rgba(10,20,32,.12) 78%),
-    linear-gradient(0deg,rgba(10,20,32,.85) 0%,rgba(10,20,32,0) 34%);
+    radial-gradient(130% 100% at 6% 34%,rgba(10,20,32,.92) 0%,rgba(10,20,32,.6) 42%,rgba(10,20,32,.06) 80%),
+    linear-gradient(0deg,rgba(10,20,32,.88) 0%,rgba(10,20,32,0) 40%),
+    linear-gradient(180deg,rgba(10,20,32,.55) 0%,rgba(10,20,32,0) 22%);
 }
 .hero-inner{position:relative;z-index:2;padding:clamp(90px,13vw,150px) 0;max-width:680px}
 .hero-kicker{
@@ -158,8 +161,8 @@ p{margin:0 0 1em}
   border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);display:flex;align-items:center;gap:8px;
 }
 .map-hint .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-2);animation:pulse 2s infinite}
-.scroll-cue{position:absolute;left:50%;bottom:22px;z-index:3;transform:translateX(-50%);
-  width:26px;height:42px;border:2px solid rgba(255,255,255,.35);border-radius:14px;display:none}
+.scroll-cue{position:absolute;left:50%;bottom:26px;z-index:3;transform:translateX(-50%);
+  width:26px;height:42px;border:2px solid rgba(255,255,255,.35);border-radius:14px;display:block}
 .scroll-cue::before{content:"";position:absolute;left:50%;top:8px;width:4px;height:8px;border-radius:2px;
   background:#fff;transform:translateX(-50%);animation:scrolldot 1.8s infinite}
 @keyframes scrolldot{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}80%{opacity:0;transform:translate(-50%,12px)}}

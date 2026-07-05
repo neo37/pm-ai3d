@@ -203,7 +203,7 @@
           map.on("dragstart", stopTour);
 
           if (autoTour) {
-            setTimeout(function () { playTour(projects); }, 1400);
+            setTimeout(function () { playTour(projects); }, 500);
           }
         })
         .catch(function () {});

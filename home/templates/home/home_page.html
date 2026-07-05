@@ -25,9 +25,10 @@
     </div>
   </div>
   <div class="map-hint"><span class="dot"></span>3D-карта · камера облетает объекты</div>
+  <a href="#intro" class="scroll-cue" aria-label="Листайте вниз"></a>
 </section>
 
-<section class="section">
+<section class="section" id="intro">
   <div class="container split">
     <div class="reveal">
       <span class="eyebrow">Институт Проектного Мышления</span>
@@ -144,6 +145,9 @@
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="{% static 'js/map.js' %}"></script>
 <script>
-  window.initAstryxMap({ container: "heroMap", interactive: false, autoTour: true, cooperative: true });
+  window.initAstryxMap({
+    container: "heroMap", interactive: false, autoTour: true, cooperative: true,
+    center: [37.6173, 55.7558], zoom: 11.2
+  });
 </script>
 {% endblock %}
