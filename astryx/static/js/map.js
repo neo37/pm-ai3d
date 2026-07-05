@@ -17,6 +17,33 @@
     0, "#cfd4dc", 30, "#bcc3ce", 90, "#a3acbb", 200, "#8892a4", 400, "#6f7a8f"
   ];
 
+  function addTerrain(map) {
+    try {
+      if (!map.getSource("terrain-dem")) {
+        map.addSource("terrain-dem", {
+          type: "raster-dem",
+          tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+          encoding: "terrarium",
+          tileSize: 256,
+          maxzoom: 14,
+        });
+      }
+      map.setTerrain({ source: "terrain-dem", exaggeration: 1.35 });
+    } catch (e) { /* нет DEM — карта работает без рельефа */ }
+    try {
+      if (map.setSky) {
+        map.setSky({
+          "sky-color": "#8fa6c0",
+          "sky-horizon-blend": 0.5,
+          "horizon-color": "#c9d4e0",
+          "horizon-fog-blend": 0.6,
+          "fog-color": "#dfe6ee",
+          "fog-ground-blend": 0.5,
+        });
+      }
+    } catch (e) { /* небо не поддержано */ }
+  }
+
   function add3DBuildings(map) {
     try {
       // В стиле liberty уже есть слой building-3d — усиливаем его,
@@ -171,6 +198,7 @@
 
     map.on("load", function () {
       add3DBuildings(map);
+      addTerrain(map);
       var host = document.getElementById(container);
       if (host && host.classList.contains("hero-map")) host.classList.add("ready");
       var loader = document.getElementById(opts.loader);
@@ -244,6 +272,7 @@
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "top-right");
     map.on("load", function () {
       add3DBuildings(map);
+      addTerrain(map);
       var el = document.createElement("div");
       el.className = "mk";
       var pin = document.createElement("div");
