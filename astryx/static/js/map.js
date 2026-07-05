@@ -13,7 +13,7 @@
   }
 
   var BUILDING_COLOR = [
-    "interpolate", ["linear"], ["get", "render_height"],
+    "interpolate", ["linear"], ["coalesce", ["get", "render_height"], 0],
     0, "#cfd4dc", 30, "#bcc3ce", 90, "#a3acbb", 200, "#8892a4", 400, "#6f7a8f"
   ];
 
